@@ -1,0 +1,47 @@
+{
+  "name": "PROJECT_NAME_REPLACE_ME",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/app.js",
+    "dev": "npm run docker:up && npm run docker:server-logs",
+    "dev:stop": "docker-compose down",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:up": "docker-compose up --build",
+    "docker:server-shell": "docker exec -it ts-node-docker-express /bin/sh",
+    "docker:db-shell": "docker exec -it ts-node-docker-postgres psql -U postgres -d DB_NAME_REPLACE_ME",
+    "docker-internal:dev": "nodemon src/app.ts",
+    "db:migrate": "sqitch deploy db:$DATABASE_URL",
+    "db:verify": "sqitch verify db:$DATABASE_URL",
+    "db:revert": "sqitch revert db:$DATABASE_URL"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+REPO_URI_REPLACE_ME.git"
+  },
+  "keywords": [],
+  "author": "AUTHOR_REPLACE_ME",
+  "license": "ISC",
+  "bugs": {
+    "url": "REPO_URI_REPLACE_ME/issues"
+  },
+  "homepage": "REPO_URI_REPLACE_ME#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "express-promise-router": "^4.1.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/express-promise-router": "^3.0.0",
+    "@types/morgan": "^1.9.3",
+    "@types/node": "^17.0.31",
+    "nodemon": "^2.0.16",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
+  }
+}

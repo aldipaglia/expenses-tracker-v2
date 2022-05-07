@@ -1,0 +1,32 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./docker/server/Dockerfile
+    # depends_on:
+    #   postgres:
+    #     condition: service_healthy
+    container_name: ts-node-docker-express
+    volumes:
+      - ./src:/server/src
+      - ./sqitch:/server/sqitch
+      - ./sqitch.conf:/server/sqitch.conf
+      - ./package.json:/server/package.json
+      - ./package-lock.json:/server/package-lock.json
+    ports:
+      - 8080:8080
+    command: npm run docker-internal:dev
+    environment:
+      CHOKIDAR_USEPOLLING: 'true'
+      PORT: 8080
+      DATABASE_URL: postgres://postgres:root@postgres:5432/DB_NAME_REPLACE_ME
+
+  postgres:
+    build: ./docker/db
+    container_name: ts-node-docker-postgres
+    volumes:
+      - /var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: DB_NAME_REPLACE_ME
