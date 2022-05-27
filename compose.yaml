@@ -20,7 +20,7 @@ services:
       CHOKIDAR_USEPOLLING: 'true'
       PORT: 8080
       DATABASE_URL: postgres://postgres:root@postgres:5432/DB_NAME_REPLACE_ME
-
+      ROARR_LOG: 'true'
   postgres:
     build: ./docker/db
     container_name: ts-node-docker-postgres

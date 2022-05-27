@@ -2,7 +2,7 @@
 
 BEGIN;
 
-SELECT username, password, timestamp
+SELECT email, password, timestamp
 FROM users
 WHERE FALSE;
 
