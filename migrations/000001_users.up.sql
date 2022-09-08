@@ -1,5 +1,3 @@
--- Deploy PROJECT_NAME_REPLACE_ME:users to pg
-
 BEGIN;
 
 CREATE TABLE users (
@@ -8,5 +6,7 @@ CREATE TABLE users (
   password  TEXT        NOT NULL,
   timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+INSERT INTO users (id, email, password) VALUES (1, 'test', 12345678);
 
 COMMIT;

@@ -41,6 +41,8 @@ app.use((err: any, _: Request, res: Response, next: NextFunction) => {
       return
     }
 
+    console.error(err)
+
     res.status(500).json({
       message: 'Internal Server Error',
     })

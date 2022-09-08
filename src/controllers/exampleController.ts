@@ -1,10 +1,14 @@
-import { Controller, Get, Query, Route, Security } from 'tsoa'
+import { AuthenticatedRequest } from 'models/Auth'
+import { Controller, Get, Query, Route, Security, Request } from 'tsoa'
 
 @Route('example')
 export class ExampleController extends Controller {
   @Get('resource')
   @Security('jwt')
-  async getProtectedResource(@Query('param_name') paramName: string) {
-    return { param: paramName }
+  async getProtectedResource(
+    @Request() request: AuthenticatedRequest,
+    @Query('param_name') paramName: string
+  ) {
+    return { param: request.user, paramName }
   }
 }

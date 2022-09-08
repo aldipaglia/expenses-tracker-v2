@@ -9,17 +9,16 @@ services:
     container_name: ts-node-docker-express
     volumes:
       - ./src:/server/src
-      - ./sqitch:/server/sqitch
-      - ./sqitch.conf:/server/sqitch.conf
+      - ./migrations:/server/migrations
       - ./package.json:/server/package.json
       - ./package-lock.json:/server/package-lock.json
     ports:
       - 8080:8080
-    command: npm run docker-internal:dev
+    command: npm run internal:dev
     environment:
       CHOKIDAR_USEPOLLING: 'true'
       PORT: 8080
-      DATABASE_URL: postgres://postgres:root@postgres:5432/DB_NAME_REPLACE_ME
+      DATABASE_URL: postgres://postgres:root@postgres:5432/DB_NAME_REPLACE_ME?sslmode=disable
       ROARR_LOG: 'true'
   postgres:
     build: ./docker/db

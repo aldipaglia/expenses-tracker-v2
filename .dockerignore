@@ -4,6 +4,5 @@
 !package.json
 !package-lock.json
 !nodemon.json
-!sqitch
-!sqitch.conf
+!migrations
 !tsoa.json
