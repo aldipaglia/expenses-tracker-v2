@@ -8,7 +8,9 @@
     "frontend"
   ],
   "scripts": {
-    "dev": "concurrently -n BACKEND,UI -c bgBlue.bold,bgGreen.bold -p \"{name}|>\" \"npm:dev -w api\" \"npm:dev -w frontend\""
+    "api": "npm run dev -w api && npm run docker:api-logs -w api",
+    "ui": "npm run dev -w frontend",
+    "dev": "concurrently -n BACKEND,UI -c bgBlue.bold,bgGreen.bold -p \"{name}|>\" \"npm:api-up\" \"npm:ui\""
   },
   "devDependencies": {
     "concurrently": "^7.4.0",

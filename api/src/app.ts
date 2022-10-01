@@ -26,6 +26,7 @@ app.use((_, res: Response) => {
 app.use((err: any, _: Request, res: Response, next: NextFunction) => {
   if (err) {
     if (err instanceof ValidateError) {
+      // field length validations are not clearly rejected
       res.status(400).json({
         message: 'Validation Failed',
         fields: err.fields,

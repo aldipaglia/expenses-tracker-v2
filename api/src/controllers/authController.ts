@@ -7,7 +7,7 @@ import {
   Route,
   TsoaResponse,
 } from 'tsoa'
-import { sign } from 'jsonwebtoken'
+import { SignJWT } from 'jose'
 import { User } from '../models/User'
 import {
   BadRequestError,
@@ -17,6 +17,7 @@ import {
 import * as usersRepository from '../repositories/usersRepository'
 import { JWTData } from '../models/Auth'
 import config from '../config'
+import { JwtPayload } from 'jsonwebtoken'
 
 type LoginParams = Pick<User, 'email' | 'password'>
 type SignupParams = Omit<User, 'id'>
@@ -42,7 +43,7 @@ export class AuthController extends Controller {
     }
 
     return {
-      access_token: this.signToken({
+      access_token: await this.signToken({
         id: user.id,
         email: user.email,
         scopes: [],
@@ -68,7 +69,7 @@ export class AuthController extends Controller {
     )
 
     return {
-      access_token: this.signToken({
+      access_token: await this.signToken({
         id: newUser.id,
         email: newUser.email,
         scopes: [],
@@ -81,13 +82,18 @@ export class AuthController extends Controller {
   }
 
   private comparePassword(raw: string, hash: string): Promise<boolean> {
-    console.log({ raw, hash })
     return Promise.resolve(raw === hash)
   }
 
-  private signToken(data: JWTData): string {
-    return sign(data, config.jwt_secret, {
-      expiresIn: 1440,
-    })
+  private async signToken(data: JWTData): Promise<string> {
+    const secretKey = new TextEncoder().encode(config.jwt_secret)
+
+    return await new SignJWT(data as JwtPayload)
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setIssuer('issuer')
+      .setAudience('audience')
+      .setExpirationTime('2h')
+      .sign(secretKey)
   }
 }

@@ -1,10 +1,10 @@
 import { Request } from 'express'
-import * as jwt from 'jsonwebtoken'
+import { jwtVerify } from 'jose'
 import config from './config'
 
 // import { JWTData } from './models/Auth'
 
-export function expressAuthentication(
+export async function expressAuthentication(
   request: Request,
   securityName: string,
   _: string[]
@@ -15,32 +15,28 @@ export function expressAuthentication(
 
   const headerValue = request.headers.authorization as string
 
-  return new Promise((resolve, reject) => {
-    if (!headerValue) {
-      reject(new Error('No token provided'))
-    }
+  if (!headerValue) {
+    throw new Error('No token provided')
+  }
 
-    if (!headerValue.startsWith('Bearer ')) {
-      reject(new Error('Wrong token format'))
-    }
+  if (!headerValue.startsWith('Bearer ')) {
+    throw new Error('Wrong token format')
+  }
 
-    const token = headerValue.substring(7)
+  const token = headerValue.substring(7)
+  const secretKey = new TextEncoder().encode(config.jwt_secret)
+  const decoded = await jwtVerify(token, secretKey)
 
-    jwt.verify(token, config.jwt_secret, (err: any, decoded: any) => {
-      if (err) return reject(err)
-      resolve(decoded)
+  return decoded
+  // const jwtData = decoded as JWTData
 
-      // const jwtData = decoded as JWTData
-
-      // if (scopes && !jwtData.scopes?.includes('admin')) {
-      //   for (const scope of scopes) {
-      //     if (!jwtData.scopes?.includes(scope)) {
-      //       reject(
-      //         new Error(`JWT does not contain required scope: "${scope}".`)
-      //       )
-      //     }
-      //   }
-      // }
-    })
-  })
+  // if (scopes && !jwtData.scopes?.includes('admin')) {
+  //   for (const scope of scopes) {
+  //     if (!jwtData.scopes?.includes(scope)) {
+  //       reject(
+  //         new Error(`JWT does not contain required scope: "${scope}".`)
+  //       )
+  //     }
+  //   }
+  // }
 }
