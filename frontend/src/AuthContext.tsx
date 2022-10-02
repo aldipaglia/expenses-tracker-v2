@@ -12,6 +12,7 @@ interface AuthContextType {
   user?: User
   signin: (email: string, password: string) => Promise<void>
   signout: () => void
+  isLoggedIn: () => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType>(null!)
@@ -46,13 +47,25 @@ export const AuthProvider: FC<{ children: ReactElement }> = ({ children }) => {
     setUser(rest as User)
   }
 
-  let signout = () => {
+  const signout = () => {
     localStorage.removeItem(config.jwtStorageKey)
     setUser(undefined)
   }
 
+  const isLoggedIn = async () => {
+    const token = localStorage.getItem(config.jwtStorageKey)
+    const secretKey = new TextEncoder().encode(config.jwtSecret)
+
+    try {
+      await jwtVerify(token ?? '', secretKey)
+      return true
+    } catch (e) {
+      return false
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, signin, signout }}>
+    <AuthContext.Provider value={{ user, signin, signout, isLoggedIn }}>
       {children}
     </AuthContext.Provider>
   )

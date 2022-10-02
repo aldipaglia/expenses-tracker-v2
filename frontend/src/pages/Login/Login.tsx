@@ -1,15 +1,24 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../../AuthContext'
 
 const Login: FC = () => {
   const navigate = useNavigate()
-  const { signin } = useAuthContext()
+  const { isLoggedIn, signin } = useAuthContext()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const [serverError, setServerError] = useState('')
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const loggedIn = await isLoggedIn()
+      if (loggedIn) navigate('/', { replace: true })
+    }
+
+    checkLoginStatus()
+  }, [])
 
   const login = async (email: string, password: string) => {
     try {
