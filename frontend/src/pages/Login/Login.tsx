@@ -1,31 +1,23 @@
 import { FC, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import config from '../../config'
+import { useAuthContext } from '../../AuthContext'
 
 const Login: FC = () => {
   const navigate = useNavigate()
+  const { signin } = useAuthContext()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [serverError, setServerError] = useState('')
+
   const login = async (email: string, password: string) => {
-    const r = await fetch('http://localhost:8080/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    })
-
-    if (!r.ok) {
-      return
+    try {
+      await signin(email, password)
+      navigate('/', { replace: true })
+    } catch (err: any) {
+      setServerError(err?.message as string)
     }
-
-    const token = await r.json()
-
-    localStorage.setItem(config.jwtStorageKey, token.access_token)
-    navigate('/')
   }
 
   return (
@@ -40,6 +32,13 @@ const Login: FC = () => {
             <div className="card shadow-lg">
               <div className="card-body p-5">
                 <h1 className="fs-4 card-title fw-bold mb-4">Login</h1>
+
+                {serverError && (
+                  <div className="mb-4">
+                    <span className="text-danger">{serverError}</span>
+                  </div>
+                )}
+
                 <div className="mb-3">
                   <label className="mb-2 text-muted" htmlFor="email">
                     E-Mail
@@ -76,7 +75,6 @@ const Login: FC = () => {
                   </button>
                 </div>
               </div>
-
               <div className="card-footer py-3 border-0">
                 <div className="text-center">
                   Don't have an account?{' '}

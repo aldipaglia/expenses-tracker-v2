@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider, redirect } from 'react-router-dom'
 import { jwtVerify } from 'jose'
 import config from './config'
 import { Dashboard, Login } from './pages'
+import { AuthProvider } from './AuthContext'
 
 const authLoader = async () => {
   const token = localStorage.getItem(config.jwtStorageKey)
@@ -30,7 +31,9 @@ const router = createBrowserRouter([
 
 const App: FC = () => (
   <div className="App">
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </div>
 )
 
