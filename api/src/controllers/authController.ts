@@ -7,17 +7,17 @@ import {
   Route,
   TsoaResponse,
 } from 'tsoa'
-import { SignJWT } from 'jose'
+import { SignJWT, JWTPayload } from 'jose'
+import bcrypt from 'bcrypt'
 import { User } from '../models/User'
+import { JWTData } from '../models/Auth'
 import {
   BadRequestError,
   UnauthorizedError,
   ValidationError,
 } from '../models/Response'
 import * as usersRepository from '../repositories/usersRepository'
-import { JWTData } from '../models/Auth'
 import config from '../config'
-import { JwtPayload } from 'jsonwebtoken'
 
 type LoginParams = Pick<User, 'email' | 'password'>
 type SignupParams = Omit<User, 'id'>
@@ -65,7 +65,7 @@ export class AuthController extends Controller {
 
     const newUser = await usersRepository.create(
       body.email,
-      this.hashPassword(body.password)
+      await this.hashPassword(body.password)
     )
 
     return {
@@ -77,18 +77,19 @@ export class AuthController extends Controller {
     }
   }
 
-  private hashPassword(password: string): string {
-    return password
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(config.salt_rounds)
+    return bcrypt.hash(password, salt)
   }
 
   private comparePassword(raw: string, hash: string): Promise<boolean> {
-    return Promise.resolve(raw === hash)
+    return bcrypt.compare(raw, hash)
   }
 
   private async signToken(data: JWTData): Promise<string> {
     const secretKey = new TextEncoder().encode(config.jwt_secret)
 
-    return await new SignJWT(data as JwtPayload)
+    return await new SignJWT(data as unknown as JWTPayload)
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
       .setIssuer('issuer')

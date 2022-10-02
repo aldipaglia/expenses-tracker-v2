@@ -4,4 +4,5 @@ export default {
   jwt_secret:
     process.env.JWT_SECRET ||
     'REPLACE_ME_JWT_SECRET_REPLACE_ME_JWT_SECRET_REPLACE_ME_JWT_SECRET',
+  salt_rounds: 10,
 }
