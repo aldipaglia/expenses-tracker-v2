@@ -8,6 +8,6 @@ CREATE TABLE users (
 );
 
 -- test 12345678
-INSERT INTO users (id, email, password) VALUES (1, 'test', '$2b$10$f4UUOF64nTt1AYLBZjnGXeErMHcW02kQtoTj4DgqUZjInjYS.MCyW');
+INSERT INTO users (email, password) VALUES ('test', '$2b$10$f4UUOF64nTt1AYLBZjnGXeErMHcW02kQtoTj4DgqUZjInjYS.MCyW');
 
 COMMIT;

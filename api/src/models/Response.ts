@@ -15,3 +15,7 @@ export interface UnauthorizedError {
 export interface NotFoundError {
   message: string
 }
+
+export interface ConflictError {
+  message: string
+}
