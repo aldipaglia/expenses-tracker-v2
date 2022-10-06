@@ -7,11 +7,15 @@ export interface BadRequestError {
   message: string
 }
 
+export interface NotFoundError {
+  message: string
+}
+
+export interface ConflictError {
+  message: string
+}
+
 export interface UnauthorizedError {
   message: string
   details: string
-}
-
-export interface NotFoundError {
-  message: string
 }
