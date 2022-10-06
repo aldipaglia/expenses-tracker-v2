@@ -25,9 +25,12 @@ export async function expressAuthentication(
 
   const token = headerValue.substring(7)
   const secretKey = new TextEncoder().encode(config.jwt_secret)
-  const decoded = await jwtVerify(token, secretKey)
 
-  return decoded
+  const {
+    payload: { id, email, scopes },
+  } = await jwtVerify(token, secretKey)
+
+  return { id, email, scopes }
   // const jwtData = decoded as JWTData
 
   // if (scopes && !jwtData.scopes?.includes('admin')) {
