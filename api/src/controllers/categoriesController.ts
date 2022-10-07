@@ -11,7 +11,8 @@ import {
   TsoaResponse,
 } from 'tsoa'
 import * as categoriesRepository from '../repositories/categoriesRepository'
-import type { ConflictError } from 'models/Response'
+import type { ConflictError } from '../models/Response'
+import { Category } from '../models/Category'
 
 @Route('categories')
 export class CategoriesControllers extends Controller {
@@ -25,8 +26,8 @@ export class CategoriesControllers extends Controller {
   @Security('jwt')
   async createCategory(
     @Request() request: AuthenticatedRequest,
-    @Body() categoryData: { name: string }, // TODO: see how to use type
-    @Res() conflictResponse: TsoaResponse<409, ConflictError> // TODO: see how to use type
+    @Body() categoryData: Pick<Category, 'name'>,
+    @Res() conflictResponse: TsoaResponse<409, ConflictError>
   ) {
     const exists = await categoriesRepository.existsByNameAndUserId(
       categoryData.name,

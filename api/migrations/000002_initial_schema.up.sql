@@ -4,7 +4,8 @@ CREATE TABLE categories (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   user_id INT NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users (id)
+  FOREIGN KEY (user_id) REFERENCES users (id),
+  UNIQUE (NAME, user_id)
 );
 
 CREATE TABLE expenses (
@@ -16,14 +17,6 @@ CREATE TABLE expenses (
   rate DECIMAL NOT NULL DEFAULT 1,
   total DECIMAL NOT NULL,
   FOREIGN KEY (category_id) REFERENCES categories (id)
-);
-
-CREATE TABLE expense_items (
-  id SERIAL PRIMARY KEY,
-  expense_id INT NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  total DECIMAL NOT NULL,
-  FOREIGN KEY (expense_id) REFERENCES expenses (id)
 );
 
 CREATE TYPE FREQ AS ENUM ('yearly', 'monthly', 'weekly');
