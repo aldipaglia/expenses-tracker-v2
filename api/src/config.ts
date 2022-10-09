@@ -5,4 +5,5 @@ export default {
     process.env.JWT_SECRET ||
     'REPLACE_ME_JWT_SECRET_REPLACE_ME_JWT_SECRET_REPLACE_ME_JWT_SECRET',
   salt_rounds: 10,
+  fixer_key: process.env.FIXER_KEY,
 }

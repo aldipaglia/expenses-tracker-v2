@@ -13,6 +13,15 @@ export const existsByNameAndUserId = async (
 
   return exists
 }
+
+export const existsById = async (id: Category['id']) => {
+  const exists = await pool.exists(sql`
+    SELECT 1 FROM categories WHERE id = ${id}
+  `)
+
+  return exists
+}
+
 export const fetchCategories = async (userId: User['id']) => {
   const categories = await pool.any(sql`
       SELECT id, name FROM categories WHERE user_id = ${userId}

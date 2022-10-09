@@ -4,7 +4,7 @@ import { IncompleteExpense } from 'models/IncompleteExpenses.js'
 import { RecurringExpense } from 'models/RecurringExpenses.js'
 import { User } from 'models/User.js'
 import { sql } from 'slonik'
-import pool from '../db.js'
+import pool from '../db'
 
 type ExpenseData = Pick<
   Expense,
@@ -258,8 +258,8 @@ export const insertRecurringExpense = async ({
       ${name},
       ${currency},
       ${frequency},
-      ${total || 'NULL'},
-      ${category_id}
+      ${total || 'NULL'}, -- TODO
+      ${category_id},
       ${user_id}
     )
 
