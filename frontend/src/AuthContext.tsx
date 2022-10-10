@@ -1,6 +1,7 @@
 import { createContext, FC, ReactElement, useContext, useState } from 'react'
 import { jwtVerify } from 'jose'
 import config from './config'
+import authAPI from './api/auth'
 
 type User = {
   id: number
@@ -21,23 +22,9 @@ export const AuthProvider: FC<{ children: ReactElement }> = ({ children }) => {
   const [user, setUser] = useState<User>()
 
   const signin = async (email: string, password: string) => {
-    const r = await fetch('http://localhost:8080/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    })
+    const loginResponse = await authAPI.login(email, password)
 
-    if (!r.ok) {
-      const err = await r.json()
-      throw err
-    }
-
-    const jsonResponse = await r.json()
-
-    const accessToken = jsonResponse.access_token
+    const accessToken = loginResponse.access_token
     const secretKey = new TextEncoder().encode(config.jwtSecret)
 
     const decoded = await jwtVerify(accessToken ?? '', secretKey)
