@@ -6,3 +6,4 @@
 !nodemon.json
 !migrations
 !tsoa.json
+!.eastrc

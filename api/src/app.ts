@@ -4,7 +4,6 @@ import morgan from 'morgan'
 import swaggerUi from 'swagger-ui-express'
 import { ValidateError } from 'tsoa'
 
-import config from './config'
 import { RegisterRoutes } from '../build/routes'
 
 const app = express()
@@ -53,6 +52,4 @@ app.use((err: any, _: Request, res: Response, next: NextFunction) => {
   next()
 })
 
-app.listen(config.port, () => {
-  console.log(`Server running on port ${config.port}`)
-})
+export default app

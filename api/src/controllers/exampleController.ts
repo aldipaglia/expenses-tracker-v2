@@ -10,11 +10,18 @@ import {
   Response,
   Res,
   TsoaResponse,
+  Middlewares,
 } from 'tsoa'
 
 import { AuthenticatedRequest } from '../models/Auth'
 import { User } from '../models/User'
 import { ConflictError } from '../models/Response'
+
+// @ts-ignore
+const testMiddleware = (req, res, next) => {
+  console.log(req.body)
+  next()
+}
 
 @Route('example')
 export class ExampleController extends Controller {
@@ -27,6 +34,7 @@ export class ExampleController extends Controller {
     return { param: request.user, paramName }
   }
 
+  @Middlewares(testMiddleware)
   @Get('public-resource')
   async getPublicResource() {
     return { public: 'resource' }
