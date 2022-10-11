@@ -14,9 +14,9 @@
     "docker:api-logs": "docker logs -f ts-node-docker-express",
     "docker:db-sh": "docker exec -it ts-node-docker-postgres psql -U postgres -d DB_NAME_REPLACE_ME",
     "internal:dev": "npm run build:tsoa && concurrently \"nodemon src/server.ts\" \"nodemon -x npm run build:tsoa src/server.ts\" | roarr pretty-print",
-    "db:migrate": "ts-node-esm $(which east) migrate",
-    "db:revert": "ts-node-esm $(which east) rollback",
-    "db:create-migration": "ts-node-esm $(which east) create",
+    "db:migrate": "migrate -database $DATABASE_URL -path migrations up",
+    "db:revert": "migrate -database $DATABASE_URL -path migrations down",
+    "db:create-migration": "migrate create -ext sql -dir migrations -seq",
     "db:force-version": "migrate -database $DATABASE_URL -path migrations force",
     "test": "npm run build && jest"
   },

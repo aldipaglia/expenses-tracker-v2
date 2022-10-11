@@ -31,7 +31,7 @@ export class ExampleController extends Controller {
     @Request() request: AuthenticatedRequest,
     @Query('param_name') paramName: string
   ) {
-    return { param: request.user, paramName }
+    return { protected: 'resource', param: request.user, paramName }
   }
 
   @Middlewares(testMiddleware)

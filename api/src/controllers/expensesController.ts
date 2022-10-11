@@ -270,7 +270,7 @@ export class ExpensesControllers extends Controller {
     return expensesRepository.deleteRecurringExpenseByID(expenseId)
   }
 
-  @Delete('/incomplete/expenseId}')
+  @Delete('/incomplete/{expenseId}')
   @Security('jwt')
   async deleteIncompleteExpense(
     @Request() request: AuthenticatedRequest,
