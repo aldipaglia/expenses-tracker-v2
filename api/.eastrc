@@ -1,0 +1,5 @@
+{
+  "migrationNumberFormat": "dateTime",
+  "migrationExtension": "ts",
+  "esModules": true
+}

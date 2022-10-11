@@ -11,6 +11,7 @@ services:
       - ./src:/server/src
       - ./migrations:/server/migrations
       - ./package.json:/server/package.json
+      - ./tsoa.json:/server/tsoa.json
     ports:
       - 8080:8080
     command: npm run internal:dev
