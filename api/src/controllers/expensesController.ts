@@ -5,6 +5,7 @@ import {
   Get,
   Put,
   Post,
+  Delete,
   Route,
   Request,
   Security,
@@ -13,10 +14,11 @@ import {
   TsoaResponse,
   Query,
   Path,
+  Patch,
 } from 'tsoa'
 import * as expensesRepository from '../repositories/expensesRepository'
 import * as categoriesRepository from '../repositories/categoriesRepository'
-import type { BadRequestError } from '../models/Response'
+import type { BadRequestError, UnauthorizedError } from '../models/Response'
 import { Expense } from '../models/Expenses'
 import { Category } from '../models/Category'
 import { RecurringExpense } from '../models/RecurringExpenses'
@@ -34,6 +36,27 @@ type CreateRecurringExpenseData = Pick<
 > & { category_id: Category['id'] }
 
 type CompleteExpenseData = Pick<Expense, 'total'>
+
+type EditExpenseData = Partial<
+  Pick<Expense, 'name' | 'date' | 'currency' | 'total'> & {
+    category_id: Category['id']
+  }
+>
+
+type EditRecurringExpenseData = Partial<
+  Pick<
+    RecurringExpense,
+    'name' | 'date' | 'currency' | 'total' | 'frequency'
+  > & {
+    category_id: Category['id']
+  }
+>
+
+type EditIncompleteExpenseData = Partial<
+  Pick<IncompleteExpense, 'name' | 'date' | 'currency'> & {
+    category_id: Category['id']
+  }
+>
 
 const dateFormat = 'yyyy-MM-dd'
 @Route('expenses')
@@ -180,5 +203,304 @@ export class ExpensesControllers extends Controller {
     await expensesRepository.deleteIncompleteByID(expenseId)
 
     return newExpense
+  }
+
+  @Delete('/{expenseId}')
+  @Security('jwt')
+  async deleteExpense(
+    @Request() request: AuthenticatedRequest,
+    @Path() expenseId: Expense['id'],
+    @Res() badRequestResponse: TsoaResponse<400, BadRequestError>,
+    @Res() unauthorizedResponse: TsoaResponse<401, UnauthorizedError>
+  ) {
+    const expenseExists = await expensesRepository.existsByID(expenseId)
+
+    if (!expenseExists) {
+      return badRequestResponse(400, {
+        message: "'expense_id' parameter has to be an existing expense id.",
+      })
+    }
+
+    const userOwnsExpense = await expensesRepository.existsByIdAndUserId(
+      expenseId,
+      request.user.id
+    )
+
+    if (!userOwnsExpense) {
+      return unauthorizedResponse(401, {
+        message: 'Unauthorized',
+        details: 'User does not own this expense',
+      })
+    }
+
+    return expensesRepository.deleteExpenseByID(expenseId)
+  }
+
+  @Delete('/recurring/{expenseId}')
+  @Security('jwt')
+  async deleteRecurringExpense(
+    @Request() request: AuthenticatedRequest,
+    @Path() expenseId: RecurringExpense['id'],
+    @Res() badRequestResponse: TsoaResponse<400, BadRequestError>,
+    @Res() unauthorizedResponse: TsoaResponse<401, UnauthorizedError>
+  ) {
+    const expenseExists = await expensesRepository.recurringExistsById(
+      expenseId
+    )
+
+    if (!expenseExists) {
+      return badRequestResponse(400, {
+        message:
+          "'expense_id' parameter has to be an existing recurring expense id.",
+      })
+    }
+
+    const userOwnsExpense = await expensesRepository.existsByIdAndUserId(
+      expenseId,
+      request.user.id
+    )
+
+    if (!userOwnsExpense) {
+      return unauthorizedResponse(401, {
+        message: 'Unauthorized',
+        details: 'User does not own this expense',
+      })
+    }
+
+    return expensesRepository.deleteRecurringExpenseByID(expenseId)
+  }
+
+  @Delete('/incomplete/expenseId}')
+  @Security('jwt')
+  async deleteIncompleteExpense(
+    @Request() request: AuthenticatedRequest,
+    @Path() expenseId: IncompleteExpense['id'],
+    @Res() badRequestResponse: TsoaResponse<400, BadRequestError>,
+    @Res() unauthorizedResponse: TsoaResponse<401, UnauthorizedError>
+  ) {
+    const expenseExists = await expensesRepository.incompleteExistsByID(
+      expenseId
+    )
+
+    if (!expenseExists) {
+      return badRequestResponse(400, {
+        message: "'expense_id' parameter has to be an existing expense id.",
+      })
+    }
+
+    const userOwnsExpense =
+      await expensesRepository.incompleteExistsByIdAndUserId(
+        expenseId,
+        request.user.id
+      )
+
+    if (!userOwnsExpense) {
+      return unauthorizedResponse(401, {
+        message: 'Unauthorized',
+        details: 'User does not own this expense',
+      })
+    }
+
+    return expensesRepository.deleteExpenseByID(expenseId)
+  }
+
+  @Patch('/{expenseId}')
+  @Security('jwt')
+  async editExpense(
+    @Request() request: AuthenticatedRequest,
+    @Path() expenseId: Expense['id'],
+    @Body() expenseData: EditExpenseData,
+    @Res() badRequestResponse: TsoaResponse<400, BadRequestError>,
+    @Res() unauthorizedResponse: TsoaResponse<401, UnauthorizedError>
+  ) {
+    if (!Object.keys(expenseData).length) {
+      return badRequestResponse(400, {
+        message: 'Patch body must have at least one value',
+      })
+    }
+
+    const expenseExists = await expensesRepository.existsByID(expenseId)
+
+    if (!expenseExists) {
+      return badRequestResponse(400, {
+        message: "'expense_id' parameter has to be an existing expense id.",
+      })
+    }
+
+    const userOwnsExpense = await expensesRepository.existsByIdAndUserId(
+      expenseId,
+      request.user.id
+    )
+
+    if (!userOwnsExpense) {
+      return unauthorizedResponse(401, {
+        message: 'Unauthorized',
+        details: 'User does not own this expense',
+      })
+    }
+
+    if (expenseData.category_id) {
+      const categoryExists = await categoriesRepository.existsById(
+        expenseData.category_id
+      )
+
+      if (!categoryExists) {
+        return badRequestResponse(400, {
+          message: "'category_id' parameter has to be an existing category id.",
+        })
+      }
+
+      const userOwnsCategory = await categoriesRepository.existsByIdAndUserId(
+        expenseData.category_id,
+        request.user.id
+      )
+
+      if (!userOwnsCategory) {
+        return unauthorizedResponse(401, {
+          message: 'Unauthorized',
+          details: 'User does not own this category',
+        })
+      }
+    }
+
+    return expensesRepository.editExpense({
+      id: expenseId,
+      ...expenseData,
+    })
+  }
+
+  @Patch('/recurring/{expenseId}')
+  @Security('jwt')
+  async editRecurringExpense(
+    @Request() request: AuthenticatedRequest,
+    @Path() expenseId: RecurringExpense['id'],
+    @Body() recurringExpenseData: EditRecurringExpenseData,
+    @Res() badRequestResponse: TsoaResponse<400, BadRequestError>,
+    @Res() unauthorizedResponse: TsoaResponse<401, UnauthorizedError>
+  ) {
+    if (!Object.keys(recurringExpenseData).length) {
+      return badRequestResponse(400, {
+        message: 'Patch body must have at least one value',
+      })
+    }
+
+    const recurringExpenseExists = await expensesRepository.recurringExistsById(
+      expenseId
+    )
+
+    if (!recurringExpenseExists) {
+      return badRequestResponse(400, {
+        message: "'expense_id' parameter has to be an existing expense id.",
+      })
+    }
+
+    const userOwnsExpense =
+      await expensesRepository.recurringExistsByIdAndUserId(
+        expenseId,
+        request.user.id
+      )
+
+    if (!userOwnsExpense) {
+      return unauthorizedResponse(401, {
+        message: 'Unauthorized',
+        details: 'User does not own this expense',
+      })
+    }
+
+    if (recurringExpenseData.category_id) {
+      const categoryExists = await categoriesRepository.existsById(
+        recurringExpenseData.category_id
+      )
+
+      if (!categoryExists) {
+        return badRequestResponse(400, {
+          message: "'category_id' parameter has to be an existing category id.",
+        })
+      }
+
+      const userOwnsCategory = await categoriesRepository.existsByIdAndUserId(
+        recurringExpenseData.category_id,
+        request.user.id
+      )
+
+      if (!userOwnsCategory) {
+        return unauthorizedResponse(401, {
+          message: 'Unauthorized',
+          details: 'User does not own this category',
+        })
+      }
+    }
+
+    return expensesRepository.editRecurringExpense({
+      id: expenseId,
+      ...recurringExpenseData,
+    })
+  }
+
+  @Patch('/incomplete/{expenseId}')
+  @Security('jwt')
+  async editIncompleteExpense(
+    @Request() request: AuthenticatedRequest,
+    @Path() expenseId: IncompleteExpense['id'],
+    @Body() incompleteExpenseData: EditIncompleteExpenseData,
+    @Res() badRequestResponse: TsoaResponse<400, BadRequestError>,
+    @Res() unauthorizedResponse: TsoaResponse<401, UnauthorizedError>
+  ) {
+    if (!Object.keys(incompleteExpenseData).length) {
+      return badRequestResponse(400, {
+        message: 'Patch body must have at least one value',
+      })
+    }
+
+    const incompleteExpenseExists =
+      await expensesRepository.incompleteExistsByID(expenseId)
+
+    if (!incompleteExpenseExists) {
+      return badRequestResponse(400, {
+        message: "'expense_id' parameter has to be an existing expense id.",
+      })
+    }
+
+    const userOwnsExpense =
+      await expensesRepository.incompleteExistsByIdAndUserId(
+        expenseId,
+        request.user.id
+      )
+
+    if (!userOwnsExpense) {
+      return unauthorizedResponse(401, {
+        message: 'Unauthorized',
+        details: 'User does not own this expense',
+      })
+    }
+
+    if (incompleteExpenseData.category_id) {
+      const categoryExists = await categoriesRepository.existsById(
+        incompleteExpenseData.category_id
+      )
+
+      if (!categoryExists) {
+        return badRequestResponse(400, {
+          message: "'category_id' parameter has to be an existing category id.",
+        })
+      }
+
+      const userOwnsCategory = await categoriesRepository.existsByIdAndUserId(
+        incompleteExpenseData.category_id,
+        request.user.id
+      )
+
+      if (!userOwnsCategory) {
+        return unauthorizedResponse(401, {
+          message: 'Unauthorized',
+          details: 'User does not own this category',
+        })
+      }
+    }
+
+    return expensesRepository.editIncompleteExpense({
+      id: expenseId,
+      ...incompleteExpenseData,
+    })
   }
 }

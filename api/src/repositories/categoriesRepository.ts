@@ -22,6 +22,17 @@ export const existsById = async (id: Category['id']) => {
   return exists
 }
 
+export const existsByIdAndUserId = async (
+  id: Category['id'],
+  userId: User['id']
+) => {
+  const exists = await pool.exists(sql`
+    SELECT 1 FROM categories WHERE id = ${id} AND user_id = ${userId}
+  `)
+
+  return exists
+}
+
 export const fetchCategories = async (userId: User['id']) => {
   const categories = await pool.any(sql`
       SELECT id, name FROM categories WHERE user_id = ${userId}
@@ -41,4 +52,20 @@ export const insertCategory = async (
   `)
 
   return category
+}
+
+export const deleteCategoryByID = async (id: Category['id']) => {
+  await pool.query(sql`
+    DELETE FROM categories WHERE id = ${id}
+  `)
+}
+
+export const editCategory = async (
+  id: Category['id'],
+  name: Category['name']
+) => {
+  await pool.query(sql`
+    UPDATE categories SET name = ${name} WHERE id = ${id}
+    RETURNING id, name
+  `)
 }
