@@ -30,10 +30,10 @@ export const rollbackDB = async () => {
   }
 }
 
-export const loginTestUser = async () => {
+export const loginTestUser = async (userIdx = 1) => {
   const loginResponse = await request(app)
     .post('/auth/login')
-    .send({ email: 'test', password: '12345678' })
+    .send({ email: userIdx === 1 ? 'test' : 'test2', password: '12345678' })
 
   const token = loginResponse.body.access_token
   return token
