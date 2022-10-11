@@ -49,6 +49,8 @@ export class ExampleController extends Controller {
     if (body.email === 'existing@email.com') {
       return conflictResponse(409, { message: 'Email already in use' })
     }
+
+    this.setStatus(201)
     return { body }
   }
 }
