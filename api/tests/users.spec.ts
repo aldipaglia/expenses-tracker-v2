@@ -60,6 +60,27 @@ describe('example routes', () => {
     })
   })
 
+  describe('[POST] /example/public-resource', () => {
+    it('returns conflict response if email is in use', async () => {
+      const response = await request(app)
+        .post('/example/public-resource')
+        .send({ email: 'existing@email.com' })
+
+      expect(response.status).toBe(409)
+      expect(response.headers['content-type']).toMatch(/json/)
+      expect(response.body.message).toBe('Email already in use')
+    })
+
+    it('returns created response otherwise', async () => {
+      const response = await request(app)
+        .post('/example/public-resource')
+        .send({ email: 'non-existing@email.com' })
+
+      expect(response.status).toBe(201)
+      expect(response.headers['content-type']).toMatch(/json/)
+    })
+  })
+
   describe('[GET] /example/protected-resource', () => {
     it('returns unauthorized response if not logged in', async () => {
       const response = await request(app).get('/example/protected-resource')
