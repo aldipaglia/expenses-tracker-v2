@@ -78,7 +78,7 @@ describe('example routes', () => {
       const token = loginResponse.body.access_token
 
       const response = await request(app)
-        .get('/example/protected-resource')
+        .get('/example/protected-resource?param_name=test')
         .set({ Authorization: `Bearer ${token}` })
 
       expect(response.status).toBe(200)
