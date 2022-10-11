@@ -1,4 +1,11 @@
-import { createContext, FC, ReactElement, useContext, useState } from 'react'
+import {
+  createContext,
+  FC,
+  ReactElement,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { jwtVerify } from 'jose'
 import config from './config'
 import authAPI from './api/auth'
@@ -18,20 +25,39 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>(null!)
 
+const decodeToken = async (token: string) => {
+  const secretKey = new TextEncoder().encode(config.jwtSecret)
+  return await jwtVerify(token ?? '', secretKey)
+}
+
+const getUserFromToken = async (token: string) => {
+  const decoded = await decodeToken(token)
+  const { iat, iss, aud, exp, sub, jti, nbf, ...rest } = decoded.payload
+  return rest as User
+}
+
 export const AuthProvider: FC<{ children: ReactElement }> = ({ children }) => {
   const [user, setUser] = useState<User>()
+
+  useEffect(() => {
+    const setUserFromSavedToken = async () => {
+      const accessToken = localStorage.getItem(config.jwtStorageKey)
+
+      if (accessToken) {
+        const user = await getUserFromToken(accessToken)
+        setUser(user)
+      }
+    }
+
+    setUserFromSavedToken()
+  }, [])
 
   const signin = async (email: string, password: string) => {
     const loginResponse = await authAPI.login(email, password)
 
     const accessToken = loginResponse.access_token
-    const secretKey = new TextEncoder().encode(config.jwtSecret)
-
-    const decoded = await jwtVerify(accessToken ?? '', secretKey)
-    localStorage.setItem(config.jwtStorageKey, accessToken)
-
-    const { iat, iss, aud, exp, sub, jti, nbf, ...rest } = decoded.payload
-    setUser(rest as User)
+    const user = await getUserFromToken(accessToken)
+    setUser(user)
   }
 
   const signout = () => {
@@ -41,14 +67,17 @@ export const AuthProvider: FC<{ children: ReactElement }> = ({ children }) => {
 
   const isLoggedIn = async () => {
     const token = localStorage.getItem(config.jwtStorageKey)
-    const secretKey = new TextEncoder().encode(config.jwtSecret)
 
-    try {
-      await jwtVerify(token ?? '', secretKey)
-      return true
-    } catch (e) {
-      return false
+    if (token) {
+      try {
+        await decodeToken(token)
+        return true
+      } catch (e) {
+        return false
+      }
     }
+
+    return false
   }
 
   return (
