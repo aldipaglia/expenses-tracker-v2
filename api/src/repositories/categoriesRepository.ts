@@ -34,7 +34,7 @@ export const existsByIdAndUserId = async (
 }
 
 export const fetchCategories = async (userId: User['id']) => {
-  const categories = await pool.any(sql`
+  const categories = await pool.any<Pick<Category, 'id' | 'name'>>(sql`
       SELECT id, name FROM categories WHERE user_id = ${userId}
     `)
 
@@ -45,7 +45,7 @@ export const insertCategory = async (
   name: Category['name'],
   userId: User['id']
 ) => {
-  const category = await pool.one(sql`
+  const category = await pool.one<Category>(sql`
     INSERT INTO categories (name, user_id)
     VALUES (${name}, ${userId})
     RETURNING id, name, user_id
@@ -64,8 +64,19 @@ export const editCategory = async (
   id: Category['id'],
   name: Category['name']
 ) => {
-  await pool.query(sql`
+  const editedCategory = await pool.one<Pick<Category, 'id' | 'name'>>(sql`
     UPDATE categories SET name = ${name} WHERE id = ${id}
     RETURNING id, name
+  `)
+  return editedCategory
+}
+
+export const categoryIsNotEmpty = (id: Category['id']) => {
+  return pool.exists(sql`
+    SELECT 1 FROM expenses WHERE category_id = ${id}
+    UNION 
+    SELECT 1 FROM recurring_expenses WHERE category_id = ${id}
+    UNION
+    SELECT 1 FROM incomplete_expenses WHERE category_id = ${id}
   `)
 }

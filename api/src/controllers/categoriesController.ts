@@ -17,6 +17,7 @@ import * as categoriesRepository from '../repositories/categoriesRepository'
 import type {
   BadRequestError,
   ConflictError,
+  ForbiddenError,
   UnauthorizedError,
 } from '../models/Response'
 import { Category } from '../models/Category'
@@ -59,7 +60,8 @@ export class CategoriesControllers extends Controller {
     @Request() request: AuthenticatedRequest,
     @Path() categoryId: Category['id'],
     @Res() badRequestResponse: TsoaResponse<400, BadRequestError>,
-    @Res() unauthorizedResponse: TsoaResponse<401, UnauthorizedError>
+    @Res() unauthorizedResponse: TsoaResponse<401, UnauthorizedError>,
+    @Res() forbiddenResponse: TsoaResponse<403, ForbiddenError>
   ) {
     const categoryExists = await categoriesRepository.existsById(categoryId)
 
@@ -78,6 +80,17 @@ export class CategoriesControllers extends Controller {
       return unauthorizedResponse(401, {
         message: 'Unauthorized',
         details: 'User does not own this category',
+      })
+    }
+
+    const categoryIsNotEmpty = await categoriesRepository.categoryIsNotEmpty(
+      categoryId
+    )
+
+    if (categoryIsNotEmpty) {
+      return forbiddenResponse(403, {
+        message: 'Forbidden',
+        details: 'This category has one or more expenses attached to it',
       })
     }
 
@@ -142,7 +155,6 @@ export class CategoriesControllers extends Controller {
         })
       }
     }
-
     return categoriesRepository.editCategory(categoryData.id, categoryData.name)
   }
 }

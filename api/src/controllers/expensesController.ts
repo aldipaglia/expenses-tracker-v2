@@ -87,7 +87,6 @@ export class ExpensesControllers extends Controller {
     const categoryExists = await categoriesRepository.existsById(
       expenseData.category_id
     )
-
     if (!categoryExists) {
       return badRequestResponse(400, {
         message: "'category_id' parameter has to be an existing category id.",
@@ -363,9 +362,15 @@ export class ExpensesControllers extends Controller {
       }
     }
 
+    const { currency, ...rest } = expenseData
+
     return expensesRepository.editExpense({
       id: expenseId,
-      ...expenseData,
+      ...rest,
+      ...(currency && {
+        currency,
+        rate: await fixerService.getRate(currency),
+      }),
     })
   }
 

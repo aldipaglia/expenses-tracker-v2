@@ -19,3 +19,7 @@ export interface UnauthorizedError {
   message: string
   details: string
 }
+export interface ForbiddenError {
+  message: string
+  details: string
+}

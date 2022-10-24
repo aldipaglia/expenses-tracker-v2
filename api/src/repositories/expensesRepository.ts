@@ -22,7 +22,7 @@ type RecurringExpenseData = Pick<
 > & { category_id: Category['id'] } & { user_id: User['id'] }
 
 type EditExpenseData = Partial<
-  Pick<Expense, 'name' | 'date' | 'currency' | 'total'> & {
+  Pick<Expense, 'name' | 'date' | 'currency' | 'total' | 'rate'> & {
     category_id: Category['id']
   }
 > & { id: Expense['id'] }
@@ -47,7 +47,11 @@ export const fetchForRange = async (
   to: Expense['date'],
   userId: User['id']
 ) => {
-  const data = await pool.any(sql`
+  type QueryResult = Omit<Expense, 'category'> & {
+    category_id: Category['id']
+    category_name: Category['name']
+  }
+  const data = await pool.any<QueryResult>(sql`
     SELECT 
       expenses.id,
       expenses.category_id,
@@ -330,21 +334,37 @@ export const insertRecurringExpense = async ({
   name,
   user_id,
 }: RecurringExpenseData) => {
+  const makeIdentifierList = (names: string[]) =>
+    sql.join(
+      names.map((name) => sql.identifier([name])),
+      sql`, `
+    )
+
+  const makeValuesList = (values: (string | number)[]) =>
+    sql.join(
+      values.map((value) => sql`${value}`),
+      sql`,`
+    )
+
   const expense = await pool.one(sql`
     INSERT INTO recurring_expenses (
-      name,
-      currency,
-      frequency,
-      total,
-      category_id,
-      user_id
+      ${makeIdentifierList([
+        'name',
+        'currency',
+        'frequency',
+        'category_id',
+        'user_id',
+        ...(!!total ? ['total'] : []),
+      ])}
     ) VALUES (
-      ${name},
-      ${currency},
-      ${frequency},
-      ${total || 'NULL'}, -- TODO
-      ${category_id},
-      ${user_id}
+      ${makeValuesList([
+        name,
+        currency,
+        frequency,
+        category_id,
+        user_id,
+        ...(!!total ? [total] : []),
+      ])}
     )
 
     RETURNING 
