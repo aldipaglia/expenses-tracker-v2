@@ -50,7 +50,7 @@ async function genericFetch<T>({
   })
 
   if (!response.ok) {
-    throw await response.text()
+    throw JSON.parse(await response.text())
   }
 
   return (await response.json()) as T

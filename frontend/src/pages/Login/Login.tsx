@@ -27,7 +27,7 @@ const Login: FC = () => {
       await signin(email, password)
       navigate('/', { replace: true })
     } catch (err: any) {
-      setServerError(err?.message as string)
+      setServerError(err?.details as string)
     }
   }
 
@@ -39,6 +39,8 @@ const Login: FC = () => {
           <h1>Welcome Back</h1>
           <p>Enter your credentials to access your account.</p>
         </div>
+
+        <div className="error">{serverError}&nbsp;</div>
 
         <form
           onSubmit={(e) => {
@@ -60,6 +62,7 @@ const Login: FC = () => {
             <input
               type={passwordVisible ? 'text' : 'password'}
               value={password}
+              minLength={8}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
             />
