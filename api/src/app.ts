@@ -4,6 +4,7 @@ import morgan from 'morgan'
 import swaggerUi from 'swagger-ui-express'
 import { ValidateError } from 'tsoa'
 
+// @ts-ignore
 import { RegisterRoutes } from '../build/routes'
 
 const app = express()
@@ -13,6 +14,7 @@ app.use(cors())
 app.use(morgan('combined'))
 
 app.use('/docs', swaggerUi.serve, async (_req: Request, res: Response) => {
+  // @ts-ignore
   return res.send(swaggerUi.generateHTML(await import('../build/swagger.json')))
 })
 

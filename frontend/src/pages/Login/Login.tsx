@@ -12,12 +12,11 @@ const Login: FC = () => {
   const [serverError, setServerError] = useState('')
 
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      const loggedIn = await isLoggedIn()
-      if (loggedIn) navigate('/', { replace: true })
+    const goToDashboardIfLoggedIn = async () => {
+      if (isLoggedIn) navigate('/', { replace: true })
     }
 
-    checkLoginStatus()
+    goToDashboardIfLoggedIn()
   }, [])
 
   const login = async (email: string, password: string) => {

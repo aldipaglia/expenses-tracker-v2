@@ -7,21 +7,28 @@ import {
   Route,
   TsoaResponse,
 } from 'tsoa'
-import { SignJWT, JWTPayload } from 'jose'
+
+import { SignJWT, JWTPayload, jwtVerify } from 'jose'
 import bcrypt from 'bcrypt'
+
 import { User } from '../models/User'
 import { JWTData } from '../models/Auth'
+
 import {
   BadRequestError,
   UnauthorizedError,
   ValidationError,
 } from '../models/Response'
+
 import * as usersRepository from '../repositories/usersRepository'
 import config from '../config'
 
 type LoginParams = Pick<User, 'email' | 'password'>
+type VerifyParams = { access_token: string }
 type SignupParams = Omit<User, 'id'>
-type LoginResponse = { access_token: string }
+
+type LoginResponse = { access_token: string; user: Pick<User, 'id' | 'email'> }
+type VerifyResponse = { verified: false } | ({ verified: true } & LoginResponse)
 
 @Route('auth')
 export class AuthController extends Controller {
@@ -48,6 +55,39 @@ export class AuthController extends Controller {
         email: user.email,
         scopes: [],
       }),
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+    }
+  }
+
+  @Post('verify')
+  async verifyToken(@Body() body: VerifyParams): Promise<VerifyResponse> {
+    const secretKey = new TextEncoder().encode(config.jwt_secret)
+
+    try {
+      const verifyResult = await jwtVerify(body.access_token, secretKey, {
+        issuer: config.jwt_issuer,
+        audience: config.jwt_audience,
+      })
+
+      const payload = verifyResult.payload as JWTPayload & JWTData
+
+      return {
+        verified: true,
+        access_token: await this.signToken({
+          id: payload.id,
+          email: payload.email,
+          scopes: [],
+        }),
+        user: {
+          id: payload.id,
+          email: payload.email,
+        },
+      }
+    } catch (e) {
+      return { verified: false }
     }
   }
 
@@ -74,6 +114,10 @@ export class AuthController extends Controller {
         email: newUser.email,
         scopes: [],
       }),
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+      },
     }
   }
 
@@ -92,8 +136,8 @@ export class AuthController extends Controller {
     return await new SignJWT(data as unknown as JWTPayload)
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
-      .setIssuer('issuer')
-      .setAudience('audience')
+      .setIssuer(config.jwt_issuer)
+      .setAudience(config.jwt_audience)
       .setExpirationTime('2h')
       .sign(secretKey)
   }
