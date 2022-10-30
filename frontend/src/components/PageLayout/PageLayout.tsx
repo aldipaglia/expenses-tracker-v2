@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from 'react'
-import Nav from '../Nav'
-import Sidebar from '../Sidebar'
+import Nav from './Nav'
+import Sidebar from './Sidebar'
 import './PageLayout.css'
 
 interface Props {}
