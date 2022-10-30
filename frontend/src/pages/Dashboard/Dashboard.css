@@ -1,29 +1,8 @@
 .dashboard {
-  color: var(--clr-neutral-700);
-
-  & h1 {
-    font-size: var(--fs-900);
-    font-weight: var(--fw-bold);
-    color: var(--clr-primary-700);
-  }
-
-  & .first-p {
-    font-size: var(--fs-300);
-  }
-
-  & .second-p {
-    font-size: var(--fs-400);
-  }
-
-  & .third-p {
-    font-size: var(--fs-700);
-  }
-
-  & .fourth-p {
-    font-size: var(--fs-900);
-  }
-
-  &:hover {
-    color: var(--clr-primary-700);
+  & .cards-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-400);
+    /* place-items: center; */
   }
 }

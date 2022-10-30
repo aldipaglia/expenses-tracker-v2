@@ -1,40 +1,46 @@
-import { FC } from 'react'
-import { createBrowserRouter, RouterProvider, redirect } from 'react-router-dom'
-import { jwtVerify } from 'jose'
-import config from './config'
-import { Dashboard, Login } from './pages'
-import { AuthProvider } from './AuthContext'
+import { FC, PropsWithChildren } from 'react'
+import {
+  Route,
+  Routes,
+  Navigate,
+  useLocation,
+  BrowserRouter,
+} from 'react-router-dom'
 
-const authLoader = async () => {
-  const token = localStorage.getItem(config.jwtStorageKey)
-  const secretKey = new TextEncoder().encode(config.jwtSecret)
+import { AuthProvider, useAuthContext } from './AuthContext'
+import { Dashboard, Login, Logout } from './pages'
 
-  try {
-    await jwtVerify(token ?? '', secretKey)
-  } catch (err) {
-    console.error(err)
-    throw redirect('/login')
+const Private: FC<PropsWithChildren> = ({ children }) => {
+  const { isLoggedIn, verifiedAuth } = useAuthContext()
+  const location = useLocation()
+
+  if (!verifiedAuth) {
+    return <div />
   }
+
+  if (!isLoggedIn)
+    return <Navigate to="/login" state={{ from: location }} replace />
+
+  return <>{children}</>
 }
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Dashboard />,
-    loader: authLoader,
-  },
-  {
-    path: 'login',
-    element: <Login />,
-  },
-])
-
 const App: FC = () => (
-  <div className="App">
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
-  </div>
+  <AuthProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Private>
+              <Dashboard />
+            </Private>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
+      </Routes>
+    </BrowserRouter>
+  </AuthProvider>
 )
 
 export default App

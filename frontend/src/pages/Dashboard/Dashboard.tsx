@@ -1,29 +1,39 @@
 import { FC } from 'react'
-import { useAuthContext } from '../../AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { Card, PageLayout } from '../../components'
 import './Dashboard.css'
 
 const Dashboard: FC = () => {
-  const navigate = useNavigate()
-  const { user, signout } = useAuthContext()
-
-  const onLogoutClick = () => {
-    signout()
-    navigate('/login', { replace: true })
-  }
-
   return (
-    <div className="dashboard">
-      <h1>Dashboard</h1>
-      <p className="first-p">Test</p>
-      <p className="second-p">Test</p>
-      <p className="third-p">Test</p>
-      <p className="fourth-p">Test</p>
-      <code>{JSON.stringify(user)}</code>
-      <div>
-        <button onClick={onLogoutClick}>logout</button>
+    <PageLayout>
+      <div className="dashboard">
+        <div className="cards-container">
+          <Card
+            title="Total Views"
+            value="308.402"
+            mainIcon="eye-alt"
+            secondaryIcon="chevron-double-up"
+          />
+          <Card
+            title="Total Views"
+            value="308.402"
+            mainIcon="eye-alt"
+            secondaryIcon="chevron-double-up"
+          />
+          <Card
+            title="Total Views"
+            value="308.402"
+            mainIcon="eye-alt"
+            secondaryIcon="chevron-double-up"
+          />
+          <Card
+            title="Total Views"
+            value="308.402"
+            mainIcon="eye-alt"
+            secondaryIcon="chevron-double-up"
+          />
+        </div>
       </div>
-    </div>
+    </PageLayout>
   )
 }
 

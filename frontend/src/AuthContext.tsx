@@ -6,82 +6,94 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { jwtVerify } from 'jose'
+
 import config from './config'
 import authAPI from './api/auth'
-
-type User = {
-  id: number
-  email: string
-  scopes: string[]
-}
+import { User } from './models/User'
 
 interface AuthContextType {
   user?: User
-  signin: (email: string, password: string) => Promise<void>
+  isLoggedIn: boolean
+  verifiedAuth: boolean
+  signin: (email: User['email'], password: string) => Promise<void>
   signout: () => void
-  isLoggedIn: () => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType>(null!)
 
-const decodeToken = async (token: string) => {
-  const secretKey = new TextEncoder().encode(config.jwtSecret)
-  return await jwtVerify(token ?? '', secretKey)
-}
-
-const getUserFromToken = async (token: string) => {
-  const decoded = await decodeToken(token)
-  const { iat, iss, aud, exp, sub, jti, nbf, ...rest } = decoded.payload
-  return rest as User
-}
-
 export const AuthProvider: FC<{ children: ReactElement }> = ({ children }) => {
+  const [verifiedAuth, setVerifiedAuth] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<User>()
 
-  useEffect(() => {
-    const setUserFromSavedToken = async () => {
-      const accessToken = localStorage.getItem(config.jwtStorageKey)
+  const verifyAndRefreshToken = async () => {
+    const token = localStorage.getItem(config.jwtStorageKey)
 
-      if (accessToken) {
-        const user = await getUserFromToken(accessToken)
-        setUser(user)
-      }
+    if (!token) {
+      localStorage.removeItem(config.jwtStorageKey)
+      localStorage.removeItem(config.userStorageKey)
+
+      setUser(undefined)
+      setIsLoggedIn(false)
+
+      return
     }
 
-    setUserFromSavedToken()
+    const response = await authAPI.verifyToken(token)
+
+    if (response.verified) {
+      const accessToken = response.access_token
+      const user = response.user
+
+      localStorage.setItem(config.jwtStorageKey, accessToken)
+      localStorage.setItem(config.userStorageKey, JSON.stringify(user))
+
+      setUser(user)
+      setIsLoggedIn(true)
+    }
+  }
+
+  useEffect(() => {
+    const verifyAuth = async () => {
+      await verifyAndRefreshToken()
+      setVerifiedAuth(true)
+    }
+
+    verifyAuth()
+
+    const INTERVAL_TIME = 1000 * 60 * 10 // 10 min
+    const interval = setInterval(() => {
+      verifyAndRefreshToken()
+    }, INTERVAL_TIME)
+
+    return clearInterval(interval)
   }, [])
 
   const signin = async (email: string, password: string) => {
     const loginResponse = await authAPI.login(email, password)
 
     const accessToken = loginResponse.access_token
-    const user = await getUserFromToken(accessToken)
+    const user = loginResponse.user
+
+    localStorage.setItem(config.jwtStorageKey, accessToken)
+    localStorage.setItem(config.userStorageKey, JSON.stringify(user))
+
     setUser(user)
+    setIsLoggedIn(true)
   }
 
   const signout = () => {
     localStorage.removeItem(config.jwtStorageKey)
+    localStorage.removeItem(config.userStorageKey)
+
     setUser(undefined)
-  }
-
-  const isLoggedIn = async () => {
-    const token = localStorage.getItem(config.jwtStorageKey)
-
-    if (token) {
-      try {
-        await decodeToken(token)
-        return true
-      } catch (e) {
-        return false
-      }
-    }
-
-    return false
+    setIsLoggedIn(false)
   }
 
   return (
-    <AuthContext.Provider value={{ user, signin, signout, isLoggedIn }}>
+    <AuthContext.Provider
+      value={{ user, isLoggedIn, verifiedAuth, signin, signout }}
+    >
       {children}
     </AuthContext.Provider>
   )
