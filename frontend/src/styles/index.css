@@ -1,33 +1,10 @@
-@import 'reset.css';
+@import url('https://css.gg/css');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500;700&display=swap');
 
-:root {
-  --clr-accent-700: #dc3545;
-  --clr-accent-400: #198754;
-  --clr-accent-100: #20c997;
+@import 'reset.css';
+@import 'theme.css';
 
-  --clr-primary-700: #6610f2;
-  --clr-primary-400: #0d6efd;
-  --clr-primary-100: #0dcaf0;
-
-  --clr-neutral-900: #000000;
-  --clr-neutral-700: #495057;
-  --clr-neutral-500: #adb5bd;
-  --clr-neutral-300: #dee2e6;
-  --clr-neutral-100: #fafafa;
-
-  --ff-primary: 'Roboto', sans-serif;
-
-  --ff-body: var(--ff-primary);
-  --ff-heading: var(--ff-primary);
-
-  --fw-light: 100;
-  --fw-regular: 400;
-  --fw-semi-bold: 500;
-  --fw-bold: 700;
-
-  --fs-300: 0.875rem;
-  --fs-400: 1rem;
-  --fs-700: 1.875rem;
-  --fs-900: 3.5rem;
+#root {
+  height: 100%;
+  width: 100%;
 }

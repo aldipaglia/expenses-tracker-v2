@@ -4,8 +4,9 @@ import { jwtVerify } from 'jose'
 import config from './config'
 import { Dashboard, Login } from './pages'
 import { AuthProvider } from './AuthContext'
+import Logout from './pages/Logout'
 
-const authLoader = async () => {
+const privateRouteLoader = async () => {
   const token = localStorage.getItem(config.jwtStorageKey)
   const secretKey = new TextEncoder().encode(config.jwtSecret)
 
@@ -21,20 +22,22 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Dashboard />,
-    loader: authLoader,
+    loader: privateRouteLoader,
   },
   {
     path: 'login',
     element: <Login />,
   },
+  {
+    path: 'logout',
+    element: <Logout />,
+  },
 ])
 
 const App: FC = () => (
-  <div className="App">
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
-  </div>
+  <AuthProvider>
+    <RouterProvider router={router} />
+  </AuthProvider>
 )
 
 export default App

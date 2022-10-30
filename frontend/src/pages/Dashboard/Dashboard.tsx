@@ -1,29 +1,19 @@
 import { FC } from 'react'
 import { useAuthContext } from '../../AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { PageLayout } from '../../components'
 import './Dashboard.css'
 
 const Dashboard: FC = () => {
   const navigate = useNavigate()
-  const { user, signout } = useAuthContext()
+  const { user } = useAuthContext()
 
-  const onLogoutClick = () => {
-    signout()
-    navigate('/login', { replace: true })
-  }
+  const onLogoutClick = () => navigate('/logout')
 
   return (
-    <div className="dashboard">
-      <h1>Dashboard</h1>
-      <p className="first-p">Test</p>
-      <p className="second-p">Test</p>
-      <p className="third-p">Test</p>
-      <p className="fourth-p">Test</p>
-      <code>{JSON.stringify(user)}</code>
-      <div>
-        <button onClick={onLogoutClick}>logout</button>
-      </div>
-    </div>
+    <PageLayout>
+      <div className="dashboard"></div>
+    </PageLayout>
   )
 }
 
