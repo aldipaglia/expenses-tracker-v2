@@ -1,0 +1,47 @@
+.table {
+  border: 2px solid var(--clr-neutral-600);
+  border-radius: var(--border-radius-400);
+  border-spacing: 0;
+
+  & thead {
+    background-color: var(--clr-neutral-500);
+    color: var(--clr-primary-700);
+
+    & tr {
+      border-bottom: 1px solid var(--clr-neutral-700);
+
+      & th {
+        font-weight: var(--fw-semi-bold);
+        padding: var(--spacing-200);
+      }
+
+      & th:first-of-type {
+        border-top-left-radius: var(--border-radius-400);
+      }
+
+      & th:last-of-type {
+        border-top-right-radius: var(--border-radius-400);
+      }
+    }
+  }
+
+  & tbody {
+    background-color: var(--clr-neutral-100);
+
+    & tr {
+      border-bottom: 1px solid var(--clr-neutral-600);
+
+      & td {
+        padding: var(--spacing-200) var(--spacing-400);
+      }
+
+      & td:first-of-type {
+        border-bottom-left-radius: var(--border-radius-400);
+      }
+
+      & td:last-of-type {
+        border-bottom-right-radius: var(--border-radius-400);
+      }
+    }
+  }
+}
