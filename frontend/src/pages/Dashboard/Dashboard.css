@@ -7,5 +7,14 @@
 
   & .table-container {
     margin-block: var(--spacing-400);
+
+    & .table-total {
+      display: flex;
+      flex-direction: column;
+
+      & .conversion {
+        font-size: var(--fs-300);
+      }
+    }
   }
 }

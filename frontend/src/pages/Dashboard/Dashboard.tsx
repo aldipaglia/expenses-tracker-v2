@@ -4,21 +4,112 @@ import './Dashboard.css'
 
 const data = [
   {
-    name: 'a',
-    frequency: 'daily',
-    category: { id: 1, name: 'category A' },
-    total: 4400,
-    currency: 'UYU',
-    rate: 42.31,
-  },
-
-  {
-    name: 'b',
-    frequency: 'monthly',
-    category: { id: 1, name: 'category B' },
-    total: 12,
+    id: 405,
+    name: 'Alquiler',
+    date: '2022-11-01',
     currency: 'USD',
     rate: 1,
+    total: 1100,
+    category: {
+      id: 1,
+      name: 'Alquiler',
+    },
+  },
+  {
+    id: 404,
+    name: 'Google One (storage)',
+    date: '2022-11-01',
+    currency: 'USD',
+    rate: 1,
+    total: 20,
+    category: {
+      id: 3,
+      name: 'Misc',
+    },
+  },
+  {
+    id: 406,
+    name: 'Netflix',
+    date: '2022-11-01',
+    currency: 'USD',
+    rate: 1,
+    total: 8.55,
+    category: {
+      id: 3,
+      name: 'Misc',
+    },
+  },
+  {
+    id: 408,
+    name: 'Spotify',
+    date: '2022-11-01',
+    currency: 'USD',
+    rate: 1,
+    total: 8,
+    category: {
+      id: 3,
+      name: 'Misc',
+    },
+  },
+  {
+    id: 403,
+    name: 'Antel Movil',
+    date: '2022-11-01',
+    currency: 'UYU',
+    rate: 40.80817575392832,
+    total: 940,
+    category: {
+      id: 4,
+      name: 'Gastos',
+    },
+  },
+  {
+    id: 407,
+    name: 'Antel Fijo + Internet',
+    date: '2022-11-01',
+    currency: 'UYU',
+    rate: 40.80817575392832,
+    total: 1554,
+    category: {
+      id: 4,
+      name: 'Gastos',
+    },
+  },
+  {
+    id: 409,
+    name: 'UTE',
+    date: '2022-11-01',
+    currency: 'UYU',
+    rate: 40.577085506527176,
+    total: 6448,
+    category: {
+      id: 4,
+      name: 'Gastos',
+    },
+  },
+  {
+    id: 410,
+    name: 'Gas',
+    date: '2022-11-01',
+    currency: 'UYU',
+    rate: 40.577085506527176,
+    total: 1557,
+    category: {
+      id: 4,
+      name: 'Gastos',
+    },
+  },
+  {
+    id: 411,
+    name: 'Blue Cross',
+    date: '2022-11-01',
+    currency: 'USD',
+    rate: 1,
+    total: 217.66,
+    category: {
+      id: 4,
+      name: 'Gastos',
+    },
   },
 ]
 
@@ -37,23 +128,34 @@ const Dashboard: FC = () => {
             data={data}
             defs={[
               {
+                title: 'Category',
+                accessor: (r) => r.category.name,
+                sortValue: (r) => r.category.name,
+              },
+              {
+                title: 'Date',
+                accessor: 'date',
+              },
+              {
                 title: 'Name',
                 accessor: 'name',
               },
               {
-                title: 'Frequency',
-                accessor: 'frequency',
-              },
-              {
-                title: 'Category',
-                accessor: (r) => r.category.name,
-              },
-              {
                 title: 'Total',
-                accessor: (r) =>
-                  r.currency === 'USD'
-                    ? `$${r.total}`
-                    : `$${(r.total / r.rate).toFixed(2)} (${r.currency})`,
+                accessor: (r) => (
+                  <div className="table-total">
+                    <span className="original">
+                      ${r.total} {r.currency !== 'USD' && `(${r.currency})`}
+                    </span>
+                    {r.currency !== 'USD' && (
+                      <span className="conversion">{`[$${(
+                        r.total / r.rate
+                      ).toFixed(2)} USD]`}</span>
+                    )}
+                  </div>
+                ),
+                sortValue: (r) =>
+                  r.currency === 'USD' ? r.total : r.total / r.rate,
               },
             ]}
           />
