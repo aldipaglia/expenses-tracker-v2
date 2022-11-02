@@ -27,7 +27,7 @@
     align-items: center;
 
     background-color: var(--clr-neutral-100);
-    border-radius: 1rem;
+    border-radius: var(--border-radius-700);
 
     padding: var(--spacing-800);
 
@@ -104,7 +104,7 @@
 
           padding: var(--spacing-300) var(--input-icon-space);
 
-          border-radius: 0.5rem;
+          border-radius: var(--border-radius-400);
           border-color: var(--clr-neutral-500);
           border-style: solid;
 
@@ -120,7 +120,7 @@
         background-color: var(--clr-primary-400);
 
         border: 0;
-        border-radius: 0.5rem;
+        border-radius: var(--border-radius-400);
 
         cursor: pointer;
       }
