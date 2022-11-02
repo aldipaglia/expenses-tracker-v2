@@ -4,13 +4,14 @@ import './Card.css'
 interface Props {
   title: string
   value: string
-  delta: number
+  delta?: number
   negative?: boolean
 }
 
 const Card: FC<Props> = ({ title, value, delta, negative = false }) => {
   const shouldDeltaBeNeutral = delta === 0
-  const shouldDeltaBeGreen = (delta > 0 && !negative) || (delta < 0 && negative)
+  const shouldDeltaBeGreen =
+    !!delta && ((delta > 0 && !negative) || (delta < 0 && negative))
 
   return (
     <div className="card">
@@ -22,16 +23,26 @@ const Card: FC<Props> = ({ title, value, delta, negative = false }) => {
       </div>
       <div className="container">
         <span className="value">{value}</span>
-        <span
-          className={`delta ${
-            !shouldDeltaBeNeutral ? (shouldDeltaBeGreen ? 'green' : 'red') : ''
-          }`}
-        >
-          {!shouldDeltaBeNeutral && (
-            <i className={`gg-arrow-${delta > 0 ? 'up' : 'down'}`} />
-          )}
-          {Math.abs(delta) + '%'}
-        </span>
+        {(!!delta || delta === 0) && (
+          <span
+            className={`delta ${
+              !shouldDeltaBeNeutral
+                ? shouldDeltaBeGreen
+                  ? 'green'
+                  : 'red'
+                : ''
+            }`}
+          >
+            {shouldDeltaBeNeutral ? (
+              '-%'
+            ) : (
+              <>
+                <i className={`gg-arrow-${delta > 0 ? 'up' : 'down'}`} />
+                {Math.abs(delta) + '%'}
+              </>
+            )}
+          </span>
+        )}
       </div>
     </div>
   )
