@@ -1,8 +1,19 @@
 import { FC } from 'react'
-import { Card, PageLayout, Table } from '../../components'
+
+import {
+  Card,
+  PageLayout,
+  Table,
+  Tab,
+  Tabs,
+  TabList,
+  TabPanel,
+} from '../../components'
+
+import { formatMoney } from '../../utils/format'
 import './Dashboard.css'
 
-const data = [
+const expenses = [
   {
     id: 405,
     name: 'Alquiler',
@@ -118,47 +129,71 @@ const Dashboard: FC = () => {
     <PageLayout>
       <div className="dashboard">
         <div className="cards-container">
-          <Card title="Total Views" value="308.402" delta={20} />
-          <Card title="Total Views" value="308.402" delta={-20} />
-          <Card title="Total Views" value="308.402" delta={0} />
-          <Card title="Total Views" value="308.402" delta={50} negative />
-        </div>
-        <div className="table-container">
-          <Table
-            data={data}
-            defs={[
-              {
-                title: 'Category',
-                accessor: (r) => r.category.name,
-                sortValue: (r) => r.category.name,
-              },
-              {
-                title: 'Date',
-                accessor: 'date',
-              },
-              {
-                title: 'Name',
-                accessor: 'name',
-              },
-              {
-                title: 'Total',
-                accessor: (r) => (
-                  <div className="table-total">
-                    <span className="original">
-                      ${r.total} {r.currency !== 'USD' && `(${r.currency})`}
-                    </span>
-                    {r.currency !== 'USD' && (
-                      <span className="conversion">{`[$${(
-                        r.total / r.rate
-                      ).toFixed(2)} USD]`}</span>
-                    )}
-                  </div>
-                ),
-                sortValue: (r) =>
-                  r.currency === 'USD' ? r.total : r.total / r.rate,
-              },
-            ]}
+          <Card
+            title="Total Expended"
+            value={formatMoney(
+              expenses.reduce(
+                (acc, curr) =>
+                  acc +
+                  (curr.currency === 'USD'
+                    ? curr.total
+                    : curr.total / curr.rate),
+                0
+              )
+            )}
+            delta={20}
+            negative
           />
+          <Card title="Total Views" value="308.402" delta={-20} negative />
+          <Card title="Total Views" value="308.402" delta={0} />
+          <Card title="Total Views" value="308.402" />
+        </div>
+
+        <div className="table-container">
+          <Tabs>
+            <TabList>
+              <Tab>Expenses</Tab>
+              <Tab>Recurring Expenses</Tab>
+            </TabList>
+            <TabPanel>
+              <Table
+                data={expenses}
+                defs={[
+                  {
+                    title: 'Category',
+                    accessor: (r) => r.category.name,
+                    sortValue: (r) => r.category.name,
+                  },
+                  {
+                    title: 'Date',
+                    accessor: 'date',
+                  },
+                  {
+                    title: 'Name',
+                    accessor: 'name',
+                  },
+                  {
+                    title: 'Total',
+                    accessor: (r) => (
+                      <div className="table-total">
+                        <span className="original">
+                          {formatMoney(r.total)}{' '}
+                          {r.currency !== 'USD' && `(${r.currency})`}
+                        </span>
+                        {r.currency !== 'USD' && (
+                          <span className="conversion">{`[${formatMoney(
+                            r.total / r.rate
+                          )} USD]`}</span>
+                        )}
+                      </div>
+                    ),
+                    sortValue: (r) =>
+                      r.currency === 'USD' ? r.total : r.total / r.rate,
+                  },
+                ]}
+              />
+            </TabPanel>
+          </Tabs>
         </div>
       </div>
     </PageLayout>

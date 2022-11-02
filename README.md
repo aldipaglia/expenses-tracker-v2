@@ -1,5 +1,7 @@
 https://dribbble.com/shots/17313206-Blumin-Web-App-Admin-Dashboard/attachments/12428051?mode=media
 
+https://dribbble.com/shots/15348169-Sisyphus-dashboard-sidebar-colour-variations
+
 https://dribbble.com/shots/18567097-CRM-dashboard-Untitled-UI
 
 https://dribbble.com/shots/19423772-Sign-up-page-Goodreads

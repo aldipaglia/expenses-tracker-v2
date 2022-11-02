@@ -1,0 +1,24 @@
+.react-tabs__tab-list {
+  border-bottom: 1px solid var(--clr-primary-400);
+}
+
+.react-tabs__tab {
+  border: 0;
+  bottom: 0;
+  padding: var(--spacing-100) var(--spacing-300);
+}
+
+.react-tabs__tab--selected {
+  background: inherit;
+
+  border: none;
+  border-bottom: 2px solid var(--clr-primary-700);
+  border-radius: 5px 5px 0 0;
+
+  font-weight: var(--fw-semi-bold);
+  color: var(--clr-primary-700);
+}
+
+.react-tabs__tab:focus:after {
+  display: none;
+}
