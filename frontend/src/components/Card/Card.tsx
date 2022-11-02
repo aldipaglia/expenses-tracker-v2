@@ -1,29 +1,37 @@
 import { FC } from 'react'
-import { Icon } from '../../types'
 import './Card.css'
 
 interface Props {
   title: string
   value: string
-  mainIcon: Icon
-  secondaryIcon: Icon
+  delta: number
+  negative?: boolean
 }
 
-const Card: FC<Props> = ({ title, value, mainIcon, secondaryIcon }) => {
+const Card: FC<Props> = ({ title, value, delta, negative = false }) => {
+  const shouldDeltaBeNeutral = delta === 0
+  const shouldDeltaBeGreen = (delta > 0 && !negative) || (delta < 0 && negative)
+
   return (
     <div className="card">
-      <div className="icons-container">
-        <div className="main-icon-wrapper">
-          <i className={`icon gg-${mainIcon}`} />
-        </div>
-        <div className="secondary-icon-wrapper">
-          <i className={`icon gg-${secondaryIcon}`} />
-        </div>
+      <div className="container">
+        <h3 className="title">{title}</h3>
+        <button>
+          <i className="gg-more-vertical-alt" />
+        </button>
       </div>
-      <h3 className="title">{title}</h3>
-      <span className="value">{value}</span>
-      <div className="action-container">
-        <span className="action">Action</span>
+      <div className="container">
+        <span className="value">{value}</span>
+        <span
+          className={`delta ${
+            !shouldDeltaBeNeutral ? (shouldDeltaBeGreen ? 'green' : 'red') : ''
+          }`}
+        >
+          {!shouldDeltaBeNeutral && (
+            <i className={`gg-arrow-${delta > 0 ? 'up' : 'down'}`} />
+          )}
+          {Math.abs(delta) + '%'}
+        </span>
       </div>
     </div>
   )
