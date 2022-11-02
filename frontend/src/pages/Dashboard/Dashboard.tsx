@@ -193,6 +193,7 @@ const Dashboard: FC = () => {
                 ]}
               />
             </TabPanel>
+            <TabPanel />
           </Tabs>
         </div>
       </div>
