@@ -17,4 +17,13 @@
       }
     }
   }
+
+  & .charts-container {
+    margin-block: var(--spacing-400);
+
+    & .pie-chart-container {
+      height: 400px;
+      width: 400px;
+    }
+  }
 }

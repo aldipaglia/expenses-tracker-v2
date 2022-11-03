@@ -8,6 +8,7 @@ import {
   Tabs,
   TabList,
   TabPanel,
+  PieChart,
 } from '../../components'
 
 import { formatMoney } from '../../utils/format'
@@ -195,6 +196,19 @@ const Dashboard: FC = () => {
             </TabPanel>
             <TabPanel />
           </Tabs>
+        </div>
+
+        <div className="charts-container">
+          <div className="pie-chart-container">
+            <PieChart
+              data={[
+                { value: 123, color: 'red', data: { id: 1, name: 'asd' } },
+                { value: 456, color: 'blue', data: { id: 2, name: 'dasda' } },
+                { value: 789, color: 'yellow', data: { id: 3, name: 'fvb' } },
+              ]}
+              getTooltipContent={(obj) => <div>{obj.name}</div>}
+            />
+          </div>
         </div>
       </div>
     </PageLayout>
