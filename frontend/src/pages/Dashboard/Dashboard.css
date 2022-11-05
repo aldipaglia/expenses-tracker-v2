@@ -3,6 +3,27 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--spacing-400);
-    /* place-items: center; */
+  }
+
+  & .table-container {
+    margin-block: var(--spacing-400);
+
+    & .table-total {
+      display: flex;
+      flex-direction: column;
+
+      & .conversion {
+        font-size: var(--fs-300);
+      }
+    }
+  }
+
+  & .charts-container {
+    margin-block: var(--spacing-400);
+
+    & .pie-chart-container {
+      height: 400px;
+      width: 400px;
+    }
   }
 }

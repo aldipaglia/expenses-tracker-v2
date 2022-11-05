@@ -1,7 +1,12 @@
 .card {
-  --card-height: 17rem;
+  --card-height: 8rem;
   --card-width: 22rem;
-  --icon-size: 4rem;
+  --btn-size: 1.5rem;
+  --delta-width: 4rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-100);
 
   height: var(--card-height);
   width: var(--card-width);
@@ -9,52 +14,59 @@
   padding: var(--spacing-400);
   background-color: var(--clr-neutral-100);
 
-  & .icons-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  border: 1px solid var(--clr-neutral-500);
+  border-radius: var(--border-radius-400);
 
-    & .main-icon-wrapper,
-    & .secondary-icon-wrapper {
-      --ggs: 1.75;
+  & .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    & .title {
+      font-size: var(--fs-400);
+      color: var(--clr-neutral-600);
+    }
+
+    & button {
+      cursor: pointer;
+      border: none;
+      height: var(--btn-size);
+      width: var(--btn-size);
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    & .value {
+      font-size: var(--fs-800);
+      color: var(--clr-primary-700);
+    }
+
+    & .delta {
+      --ggs: 0.75;
 
       display: flex;
       align-items: center;
       justify-content: center;
 
-      height: var(--icon-size);
-      width: var(--icon-size);
+      width: var(--delta-width);
+      border-radius: var(--border-radius-400);
 
-      & .icon {
-        color: var(--clr-primary-700);
+      background-color: var(--clr-neutral-600);
+
+      font-size: var(--fs-400);
+      color: var(--clr-neutral-300);
+
+      padding: var(--spacing-100);
+
+      &.green {
+        background-color: var(--clr-accent-100);
+      }
+
+      &.red {
+        background-color: var(--clr-accent-700);
       }
     }
-  }
-
-  & .main-icon-wrapper {
-    background-color: var(--clr-primary-100);
-  }
-
-  & .title {
-    margin-top: var(--spacing-400);
-    font-size: var(--fs-600);
-    color: var(--clr-neutral-600);
-  }
-
-  & .value {
-    font-size: var(--fs-800);
-    color: var(--clr-primary-700);
-  }
-
-  & .action-container {
-    border-top: 2px solid var(--clr-neutral-600);
-
-    font-size: var(--fs-500);
-    color: var(--clr-primary-400);
-
-    margin-top: var(--spacing-100);
-    padding-top: var(--spacing-200);
-
-    cursor: pointer;
   }
 }
