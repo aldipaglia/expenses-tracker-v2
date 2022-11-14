@@ -18,6 +18,7 @@ services:
     environment:
       CHOKIDAR_USEPOLLING: 'true'
       PORT: 8080
+      FIXER_KEY: 4ebc0b9ae8194b20100883919744b35c
       DATABASE_URL: postgres://postgres:root@postgres:5432/DB_NAME_REPLACE_ME?sslmode=disable
       ROARR_LOG: 'true'
   postgres:

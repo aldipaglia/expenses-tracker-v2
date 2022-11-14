@@ -44,10 +44,7 @@ type EditExpenseData = Partial<
 >
 
 type EditRecurringExpenseData = Partial<
-  Pick<
-    RecurringExpense,
-    'name' | 'date' | 'currency' | 'total' | 'frequency'
-  > & {
+  Pick<RecurringExpense, 'name' | 'currency' | 'total' | 'frequency'> & {
     category_id: Category['id']
   }
 >

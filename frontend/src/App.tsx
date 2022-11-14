@@ -9,6 +9,9 @@ import {
 
 import { AuthProvider, useAuthContext } from './AuthContext'
 import { Dashboard, Login, Logout } from './pages'
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 const Private: FC<PropsWithChildren> = ({ children }) => {
   const { isLoggedIn, verifiedAuth } = useAuthContext()
@@ -26,6 +29,7 @@ const Private: FC<PropsWithChildren> = ({ children }) => {
 
 const App: FC = () => (
   <AuthProvider>
+    <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <Routes>
         <Route
@@ -40,6 +44,7 @@ const App: FC = () => (
         <Route path="/logout" element={<Logout />} />
       </Routes>
     </BrowserRouter>
+   </QueryClientProvider>
   </AuthProvider>
 )
 

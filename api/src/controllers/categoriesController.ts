@@ -102,7 +102,7 @@ export class CategoriesControllers extends Controller {
   async editCategoryName(
     @Request() request: AuthenticatedRequest,
     @Path() categoryId: Category['id'],
-    @Body() categoryData: Pick<Category, 'name' | 'id'>,
+    @Body() categoryData: Pick<Category, 'name'>,
     @Res() badRequestResponse: TsoaResponse<400, BadRequestError>,
     @Res() unauthorizedResponse: TsoaResponse<401, UnauthorizedError>
   ) {
@@ -132,10 +132,8 @@ export class CategoriesControllers extends Controller {
       })
     }
 
-    if (categoryData.id) {
-      const categoryExists = await categoriesRepository.existsById(
-        categoryData.id
-      )
+    if (categoryId) {
+      const categoryExists = await categoriesRepository.existsById(categoryId)
 
       if (!categoryExists) {
         return badRequestResponse(400, {
@@ -144,7 +142,7 @@ export class CategoriesControllers extends Controller {
       }
 
       const userOwnsCategory = await categoriesRepository.existsByIdAndUserId(
-        categoryData.id,
+        categoryId,
         request.user.id
       )
 
@@ -155,6 +153,6 @@ export class CategoriesControllers extends Controller {
         })
       }
     }
-    return categoriesRepository.editCategory(categoryData.id, categoryData.name)
+    return categoriesRepository.editCategory(categoryId, categoryData.name)
   }
 }
